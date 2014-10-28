@@ -1,7 +1,10 @@
 docker-geoserver
 ================
 
-Docker deployment of geoserver
+Docker deployment of Geoserver. Currently this includes:
+* Postgres 9.3 / Postgis 2.1
+* Tomcat 7.0.55
+* Geoserver 2.5.3 with App Schema plugin
 
 Quick-start
 ----------
