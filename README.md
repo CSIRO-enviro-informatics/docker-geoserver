@@ -6,8 +6,8 @@ Docker deployment of geoserver
 Quick-start
 ----------
 Build:
-   sudo docker build -t csiro-env:geoserver .
+   sudo docker build -t csiro_env/geoserver .
 
 
 Run:
-   sudo docker run --privileged=true  -p 8080:8080 -d -t csiro-env:geoserver
+   sudo docker run --name "geoserver" -p 8080:8080 -d -t csiro_env/geoserver
