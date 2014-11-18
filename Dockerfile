@@ -7,6 +7,7 @@ RUN apt-get install -y --no-install-recommends unzip openjdk-7-jre-headless open
 ADD resources /tmp/resources
 
 
+
 #-------------- TOMCAT  ----------------------------
 #commenting out apt-get install tomcat7
 #RUN apt-get install -y --no-install-recommends tomcat7 tomcat7-admin
@@ -34,6 +35,10 @@ RUN chmod +x /*.sh
 
 RUN apt-get install -y --no-install-recommends postgresql postgresql-contrib postgis postgresql-9.3-postgis-2.1
 
+RUN service postgresql start && /bin/su postgres -c "createuser -d -s -r -l docker" && /bin/su postgres -c "psql postgres -c \"ALTER USER docker WITH ENCRYPTED PASSWORD 'docker'\"" && service postgresql stop
+
+ADD postgis_run.sh /postgis_run.sh
+
 #------------- Geoserver ----------------------------------------------------
 ENV GEOSERVER_VERSION 2.5.3
 RUN if [ ! -f /tmp/resources/geoserver.war.zip ]; then \
@@ -54,7 +59,26 @@ ENV GEOSERVER_DATA_DIR  /opt/geoserver_data
 
 ADD geoserver_data  ${GEOSERVER_DATA_DIR}
 
+#CMD service tomcat7 start && tail -f /var/lib/tomcat7/logs/catalina.out
+
+
+#----SSH
+RUN apt-get install -y openssh-server
+RUN mkdir /var/run/sshd
+RUN echo 'root:screencast' | chpasswd
+RUN sed -i 's/PermitRootLogin without-password/PermitRootLogin yes/' /etc/ssh/sshd_config
+
+# SSH login fix. Otherwise user is kicked off after login
+RUN sed 's@session\s*required\s*pam_loginuid.so@session optional pam_loginuid.so@g' -i /etc/pam.d/sshd
+
+ENV NOTVISIBLE "in users profile"
+RUN echo "export VISIBLE=now" >> /etc/profile
+
+RUN echo "SSHD: ALL" >> /etc/hosts.allow
+
+EXPOSE 22
 
 EXPOSE 8080
-#CMD service tomcat7 start && tail -f /var/lib/tomcat7/logs/catalina.out
-CMD ["/tomcat_run.sh"]
+EXPOSE 5432
+#CMD ["/usr/sbin/sshd", "-D"]
+CMD /usr/sbin/sshd -D & /tomcat_run.sh
