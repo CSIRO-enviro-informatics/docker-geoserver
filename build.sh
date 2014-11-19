@@ -1,4 +1,4 @@
-/bin/bash
+#!/bin/bash
 
 docker kill geoserver
 docker rm geoserver

@@ -25,19 +25,7 @@ wget -qO- https://archive.apache.org/dist/tomcat/tomcat-${TOMCAT_MAJOR_VERSION}/
 
 ADD create_tomcat_admin_user.sh /create_tomcat_admin_user.sh
 ADD tomcat_run.sh /tomcat_run.sh
-RUN chmod +x /*.sh
 
-#-------------- POSTGRES/POSTGIS----------------------------
-#RUN wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
-#RUN sudo sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt/ trusty-pgdg main" >> /etc/apt/sources.list.d/postgresql.list'
-#RUN sudo apt-get -y update
-#RUN apt-get install -y --no-recommends postgresql-9.3 postgresql-9.3-postgis-2.1
-
-RUN apt-get install -y --no-install-recommends postgresql postgresql-contrib postgis postgresql-9.3-postgis-2.1
-
-RUN service postgresql start && /bin/su postgres -c "createuser -d -s -r -l docker" && /bin/su postgres -c "psql postgres -c \"ALTER USER docker WITH ENCRYPTED PASSWORD 'docker'\"" && service postgresql stop
-
-ADD postgis_run.sh /postgis_run.sh
 
 #------------- Geoserver ----------------------------------------------------
 ENV GEOSERVER_VERSION 2.5.3
@@ -65,7 +53,7 @@ ADD geoserver_data  ${GEOSERVER_DATA_DIR}
 #----SSH
 RUN apt-get install -y openssh-server
 RUN mkdir /var/run/sshd
-RUN echo 'root:screencast' | chpasswd
+RUN echo 'root:siss' | chpasswd
 RUN sed -i 's/PermitRootLogin without-password/PermitRootLogin yes/' /etc/ssh/sshd_config
 
 # SSH login fix. Otherwise user is kicked off after login
@@ -76,9 +64,46 @@ RUN echo "export VISIBLE=now" >> /etc/profile
 
 RUN echo "SSHD: ALL" >> /etc/hosts.allow
 
-EXPOSE 22
 
-EXPOSE 8080
-EXPOSE 5432
+#-------------- POSTGRES/POSTGIS----------------------------
+#RUN wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
+#RUN sudo sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt/ trusty-pgdg main" >> /etc/apt/sources.list.d/postgresql.list'
+#RUN sudo apt-get -y update
+#RUN apt-get install -y --no-recommends postgresql-9.3 postgresql-9.3-postgis-2.1
+RUN apt-get install -y --no-install-recommends postgresql postgresql-contrib postgis postgresql-9.3-postgis-2.1
+#RUN service postgresql start && /bin/su postgres -c "createuser -d -s -r -l docker" && /bin/su postgres -c "psql postgres -c \"ALTER USER docker WITH ENCRYPTED PASSWORD 'docker'\"" && service postgresql stop
+
+USER postgres
+RUN    /etc/init.d/postgresql start &&\
+    psql --command "CREATE USER docker WITH SUPERUSER PASSWORD 'docker';" &&\
+    createdb -O docker docker
+
+# Adjust PostgreSQL configuration so that remote connections to the
+# database are possible. 
+RUN echo "host all  all    0.0.0.0/0  md5" >> /etc/postgresql/9.3/main/pg_hba.conf
+
+# And add ``listen_addresses`` to ``/etc/postgresql/9.3/main/postgresql.conf``
+RUN echo "listen_addresses='*'" >> /etc/postgresql/9.3/main/postgresql.conf
+
+USER root
+
+ADD postgis_run.sh /postgis_run.sh
+
+
+
+#---- Locales
+RUN apt-get  install -y language-pack-en-base
+
+#supervisord
+RUN apt-get install -y supervisor
+RUN mkdir -p /var/log/supervisor
+COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+
+RUN chmod +x /*.sh
+
+
+
+EXPOSE 22 8080 5432
+CMD ["/usr/bin/supervisord"]
 #CMD ["/usr/sbin/sshd", "-D"]
-CMD /usr/sbin/sshd -D & /tomcat_run.sh
+#CMD /usr/sbin/sshd -D & /tomcat_run.sh & /postgis_run.sh
