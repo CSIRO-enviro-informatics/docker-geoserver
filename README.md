@@ -9,8 +9,20 @@ Docker deployment of Geoserver. Currently this includes:
 Quick-start
 ----------
 Build:
-   sudo docker build -t csiro_env/geoserver .
+   sudo ./build.sh
 
 
 Run:
-   sudo docker run --name "geoserver" -p 8080:8080 -d -t csiro_env/geoserver
+   sudo ./run.sh
+
+Clean-up:
+   sudo ./clean-up.sh
+
+Inspect using `docker ps`
+
+
+Installation
+------------
+See https://github.com/CSIRO-enviro-informatics/docker-geoserver/wiki/Installation
+
+
