@@ -28,7 +28,7 @@ ADD tomcat_run.sh /tomcat_run.sh
 
 
 #------------- Geoserver ----------------------------------------------------
-ENV GEOSERVER_VERSION 2.5.3
+ENV GEOSERVER_VERSION 2.6.2
 RUN if [ ! -f /tmp/resources/geoserver.war.zip ]; then \
       wget -c http://sourceforge.net/projects/geoserver/files/GeoServer/${GEOSERVER_VERSION}/geoserver-${GEOSERVER_VERSION}-war.zip -O /tmp/resources/geoserver.war.zip; \
    fi; \
@@ -37,7 +37,7 @@ RUN if [ ! -f /tmp/resources/geoserver.war.zip ]; then \
    unzip /tmp/resources/geoserver/geoserver.war -d /tmp/webapps/geoserver 
 
 #add plugins
-RUN wget -c http://sourceforge.net/projects/geoserver/files/GeoServer/2.5.3/extensions/geoserver-2.5.3-app-schema-plugin.zip -O /tmp/resources/geoserver-app-schema-plugin.zip && \
+RUN wget -c http://sourceforge.net/projects/geoserver/files/GeoServer/${GEOSERVER_VERSION}/extensions/geoserver-${GEOSERVER_VERSION}-app-schema-plugin.zip -O /tmp/resources/geoserver-app-schema-plugin.zip && \
    unzip /tmp/resources/geoserver-app-schema-plugin.zip -d /tmp/webapps/geoserver/WEB-INF/lib
 
 #move geoserver to webapps
