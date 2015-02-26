@@ -27,6 +27,10 @@ Ssh is available with username 'root' and password 'siss'. Container sets up a P
 Inspect the docker container for the port number to connect using ssh or to the postgresdb.
 
 
+Tutorial video
+--------------
+[![Docker geoserver tutorial here](http://img.youtube.com/vi/Gdi2QPJ-6uQ/0.jpg)](http://www.youtube.com/watch?v=Gdi2QPJ-6uQ)
+
 
 Installation
 ------------
