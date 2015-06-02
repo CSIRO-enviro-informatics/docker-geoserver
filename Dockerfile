@@ -1,4 +1,4 @@
-FROM ubuntu:14.04
+FROM ubuntu
 
 RUN apt-get -y update
 
@@ -50,19 +50,6 @@ ADD geoserver_data  ${GEOSERVER_DATA_DIR}
 #CMD service tomcat7 start && tail -f /var/lib/tomcat7/logs/catalina.out
 
 
-#----SSH
-RUN apt-get install -y openssh-server
-RUN mkdir /var/run/sshd
-RUN echo 'root:siss' | chpasswd
-RUN sed -i 's/PermitRootLogin without-password/PermitRootLogin yes/' /etc/ssh/sshd_config
-
-# SSH login fix. Otherwise user is kicked off after login
-RUN sed 's@session\s*required\s*pam_loginuid.so@session optional pam_loginuid.so@g' -i /etc/pam.d/sshd
-
-ENV NOTVISIBLE "in users profile"
-RUN echo "export VISIBLE=now" >> /etc/profile
-
-RUN echo "SSHD: ALL" >> /etc/hosts.allow
 
 
 #-------------- POSTGRES/POSTGIS----------------------------
@@ -103,7 +90,7 @@ RUN chmod +x /*.sh
 
 
 
-EXPOSE 22 8080 5432
+EXPOSE 8080 5432
 CMD ["/usr/bin/supervisord"]
 #CMD ["/usr/sbin/sshd", "-D"]
 #CMD /usr/sbin/sshd -D & /tomcat_run.sh & /postgis_run.sh
