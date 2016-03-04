@@ -1,10 +1,15 @@
-FROM ubuntu:14.10
+FROM ubuntu:14.04
 
-RUN echo "deb http://archive.ubuntu.com/ubuntu/ precise universe" >> /etc/apt/sources.list
+#RUN echo "deb http://archive.ubuntu.com/ubuntu/ precise universe" >> /etc/apt/sources.list
 RUN apt-get -y update
 
 #-------------Pre-requisites ----------------------------------------------------
-RUN apt-get install -y --no-install-recommends unzip openjdk-7-jre-headless openjdk-7-jre vim git python-software-properties wget pwgen ca-certificates
+RUN apt-get install -y --no-install-recommends unzip openjdk-7-jre-headless openjdk-7-jre vim git python-software-properties wget pwgen software-properties-common 
+RUN sudo add-apt-repository -y ppa:ubuntugis/ubuntugis-unstable
+RUN sudo sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt trusty-pgdg main" >> /etc/apt/sources.list'
+RUN sudo wget --quiet -O - http://apt.postgresql.org/pub/repos/apt/ACCC4CF8.asc | sudo apt-key add -
+RUN apt-get -y update
+#ca-certificates
 ADD resources /tmp/resources
 
 
@@ -58,7 +63,7 @@ ADD geoserver_data  ${GEOSERVER_DATA_DIR}
 #RUN sudo sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt/ trusty-pgdg main" >> /etc/apt/sources.list.d/postgresql.list'
 #RUN sudo apt-get -y update
 #RUN apt-get install -y --no-recommends postgresql-9.3 postgresql-9.3-postgis-2.1
-RUN apt-get install -y --no-install-recommends postgresql postgresql-contrib postgis postgresql-9.4-postgis-2.1
+RUN apt-get install -y --no-install-recommends postgresql postgresql-contrib postgis postgresql-9.5-postgis-2.1
 #RUN service postgresql start && /bin/su postgres -c "createuser -d -s -r -l docker" && /bin/su postgres -c "psql postgres -c \"ALTER USER docker WITH ENCRYPTED PASSWORD 'docker'\"" && service postgresql stop
 
 USER postgres
@@ -68,10 +73,10 @@ RUN    /etc/init.d/postgresql start &&\
 
 # Adjust PostgreSQL configuration so that remote connections to the
 # database are possible. 
-RUN echo "host all  all    0.0.0.0/0  md5" >> /etc/postgresql/9.4/main/pg_hba.conf
+RUN echo "host all  all    0.0.0.0/0  md5" >> /etc/postgresql/9.5/main/pg_hba.conf
 
-# And add ``listen_addresses`` to ``/etc/postgresql/9.4/main/postgresql.conf``
-RUN echo "listen_addresses='*'" >> /etc/postgresql/9.4/main/postgresql.conf
+# And add ``listen_addresses`` to ``/etc/postgresql/9.5/main/postgresql.conf``
+RUN echo "listen_addresses='*'" >> /etc/postgresql/9.5/main/postgresql.conf
 
 USER root
 
