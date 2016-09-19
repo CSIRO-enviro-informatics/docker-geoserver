@@ -5,7 +5,7 @@ RUN apt-get -y update
 
 #-------------Pre-requisites ----------------------------------------------------
 RUN apt-get install -y --no-install-recommends unzip openjdk-7-jre-headless openjdk-7-jre vim git python-software-properties wget pwgen software-properties-common 
-RUN sudo add-apt-repository -y ppa:ubuntugis/ubuntugis-unstable
+RUN sudo add-apt-repository -y ppa:ubuntugis/ppa
 RUN sudo sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt trusty-pgdg main" >> /etc/apt/sources.list'
 RUN sudo wget --quiet -O - http://apt.postgresql.org/pub/repos/apt/ACCC4CF8.asc | sudo apt-key add -
 RUN apt-get -y update
