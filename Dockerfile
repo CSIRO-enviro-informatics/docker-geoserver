@@ -98,7 +98,7 @@ RUN chmod +x /*.sh
 
 
 
-EXPOSE 8080 5432
+#EXPOSE 8080 5432
 CMD ["/usr/bin/supervisord"]
 #CMD ["/usr/sbin/sshd", "-D"]
 #CMD /usr/sbin/sshd -D & /tomcat_run.sh & /postgis_run.sh
