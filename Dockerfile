@@ -64,7 +64,8 @@ ADD geoserver_data  ${GEOSERVER_DATA_DIR}
 #RUN sudo apt-get -y update
 #RUN apt-get install -y --no-recommends postgresql-9.3 postgresql-9.3-postgis-2.1
 #RUN apt-get install -y --no-install-recommends postgresql-9.5 postgresql-contrib-9.5 postgresql-9.5-postgis-2.3 pgadmin3 
-RUN apt-get install -y postgresql-9.6-postgis-2.3 postgresql-contrib-9.6 postgresql-9.6-postgis-scripts pgadmin3
+RUN apt-get install -y postgresql-9.6-postgis-2.4 postgresql-contrib-9.6 
+RUN apt-get install -y postgresql-9.6-postgis-2.4-scripts pgadmin3
 
 
 #RUN service postgresql start && /bin/su postgres -c "createuser -d -s -r -l docker" && /bin/su postgres -c "psql postgres -c \"ALTER USER docker WITH ENCRYPTED PASSWORD 'docker'\"" && service postgresql stop
